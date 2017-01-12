@@ -1,0 +1,29 @@
+{
+  "name": "enb-markdown",
+  "version": "0.0.1",
+  "description": "Markdown techs for ENB",
+  "engines": {
+    "node": ">=6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/levonet/enb-markdown.git"
+  },
+  "keywords": [
+    "enb",
+    "markdown"
+  ],
+  "author": {
+    "name": "Pavlo Bashynskyi",
+    "email": "levonet@gmail.com",
+    "url": "https://github.com/levonet"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/levonet/enb-markdown/issues"
+  },
+  "homepage": "https://github.com/levonet/enb-markdown",
+  "dependencies": {
+    "markdown-bemjson": "^3.0.6"
+  }
+}
