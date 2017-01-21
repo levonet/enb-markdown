@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/levonet/enb-markdown",
   "dependencies": {
+    "lodash": "^4.17.4",
     "markdown-bemjson": "^3.0.6"
   }
 }

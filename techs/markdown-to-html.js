@@ -8,13 +8,13 @@
  * This tech uses `BEMHTML`, `BEMTREE` and `markdown-bemjson` to build HTML.
  * In `bundle/bundle.bemdecl.js` need declare block `page`.
  *
- * @param {Object}            [options]                            Options
- * @param {String}            [options.target='?.html']            Path to a target with HTML file.
- * @param {String}            [options.markdownFile='?.markdown']  Path to MARKDOWN file.
- * @param {String}            [options.bemhtmlFile='?.bemtree.js'] Path to a file with compiled BEMTREE module.
- * @param {String}            [options.bemhtmlFile='?.bemhtml.js'] Path to a file with compiled BEMHTML module.
- * @param {String | Boolean}  [options.requireCss='?.min.css']     Path to CSS tech file. Set `false` if not required.
- * @param {String | Boolean}  [options.requireJs='?.min.js']       Path to JS tech file. Set `false` if not required.
+ * @param {Object}            [options]                        Options
+ * @param {String}            [options.target='?.html']        Path to a target with HTML file.
+ * @param {String}            [options.markdown='?.markdown']  Path to MARKDOWN file.
+ * @param {String}            [options.bemtree='?.bemtree.js'] Path to a file with compiled BEMTREE module.
+ * @param {String}            [options.bemhtml='?.bemhtml.js'] Path to a file with compiled BEMHTML module.
+ * @param {String | Boolean}  [options.requireCss='?.min.css'] Path to CSS tech file. Set `false` if not required.
+ * @param {String | Boolean}  [options.requireJs='?.min.js']   Path to JS tech file. Set `false` if not required.
  *
  * @example
  * var FileProvideTech = require('enb/techs/file-provider'),
@@ -53,6 +53,7 @@
  *     });
  * };
  */
+const _ = require('lodash');
 const dropRequireCache = require('enb/lib/fs/drop-require-cache');
 const MarkdownBemjson = require('markdown-bemjson');
 
@@ -71,10 +72,10 @@ module.exports = require('enb/lib/build-flow').create()
 
         const BEMTREE = require(bemtreeFilename).BEMTREE;
         const BEMHTML = require(bemhtmlFilename).BEMHTML;
-        const markdownBemjsonOptions = this._markdownBemjsonOptions;
-        const bemtree = { block: 'page', head: [], scripts: [] };
+        const markdownBemjsonOptions = _.cloneDeep(this._markdownBemjsonOptions);
+        const bemtree = { block: 'page', head: [], scripts: [], data: [] };
 
-        const htmlRule = function (html) {
+        const htmlRule = html => {
             function parsePageMetadata(data) {
                 var result;
 
@@ -120,7 +121,9 @@ module.exports = require('enb/lib/build-flow').create()
 
         if (typeof markdownBemjsonOptions.rules.html === "function") {
             const userHtmlRule = markdownBemjsonOptions.rules.html;
-            markdownBemjsonOptions.rules.html = html => userHtmlRule(htmlRule(html));
+
+            markdownBemjsonOptions.rules.html = html => 
+                userHtmlRule(htmlRule(html), data => { bemtree.data.push(data); });
         } else {
             markdownBemjsonOptions.rules.html = htmlRule;
         }
