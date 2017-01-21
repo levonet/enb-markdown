@@ -53,6 +53,7 @@
  *     });
  * };
  */
+const _ = require('lodash');
 const dropRequireCache = require('enb/lib/fs/drop-require-cache');
 const MarkdownBemjson = require('markdown-bemjson');
 
@@ -71,10 +72,10 @@ module.exports = require('enb/lib/build-flow').create()
 
         const BEMTREE = require(bemtreeFilename).BEMTREE;
         const BEMHTML = require(bemhtmlFilename).BEMHTML;
-        const markdownBemjsonOptions = this._markdownBemjsonOptions;
-        const bemtree = { block: 'page', head: [], scripts: [] };
+        const markdownBemjsonOptions = _.cloneDeep(this._markdownBemjsonOptions);
+        const bemtree = { block: 'page', head: [], scripts: [], data: [] };
 
-        const htmlRule = function (html) {
+        const htmlRule = html => {
             function parsePageMetadata(data) {
                 var result;
 
@@ -120,7 +121,9 @@ module.exports = require('enb/lib/build-flow').create()
 
         if (typeof markdownBemjsonOptions.rules.html === "function") {
             const userHtmlRule = markdownBemjsonOptions.rules.html;
-            markdownBemjsonOptions.rules.html = html => userHtmlRule(htmlRule(html));
+
+            markdownBemjsonOptions.rules.html = html => 
+                userHtmlRule(htmlRule(html), data => { bemtree.data.push(data); });
         } else {
             markdownBemjsonOptions.rules.html = htmlRule;
         }
