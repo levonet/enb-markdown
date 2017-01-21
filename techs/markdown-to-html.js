@@ -8,13 +8,13 @@
  * This tech uses `BEMHTML`, `BEMTREE` and `markdown-bemjson` to build HTML.
  * In `bundle/bundle.bemdecl.js` need declare block `page`.
  *
- * @param {Object}            [options]                            Options
- * @param {String}            [options.target='?.html']            Path to a target with HTML file.
- * @param {String}            [options.markdownFile='?.markdown']  Path to MARKDOWN file.
- * @param {String}            [options.bemhtmlFile='?.bemtree.js'] Path to a file with compiled BEMTREE module.
- * @param {String}            [options.bemhtmlFile='?.bemhtml.js'] Path to a file with compiled BEMHTML module.
- * @param {String | Boolean}  [options.requireCss='?.min.css']     Path to CSS tech file. Set `false` if not required.
- * @param {String | Boolean}  [options.requireJs='?.min.js']       Path to JS tech file. Set `false` if not required.
+ * @param {Object}            [options]                        Options
+ * @param {String}            [options.target='?.html']        Path to a target with HTML file.
+ * @param {String}            [options.markdown='?.markdown']  Path to MARKDOWN file.
+ * @param {String}            [options.bemtree='?.bemtree.js'] Path to a file with compiled BEMTREE module.
+ * @param {String}            [options.bemhtml='?.bemhtml.js'] Path to a file with compiled BEMHTML module.
+ * @param {String | Boolean}  [options.requireCss='?.min.css'] Path to CSS tech file. Set `false` if not required.
+ * @param {String | Boolean}  [options.requireJs='?.min.js']   Path to JS tech file. Set `false` if not required.
  *
  * @example
  * var FileProvideTech = require('enb/techs/file-provider'),

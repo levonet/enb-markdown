@@ -12,8 +12,8 @@
  * @param {String}    [options.target='?.markdown']          Path to compiled file.
  * @param {String}    [options.filesTarget='?.files']        Path to a target with FileList<br>
  *                                                           {@link http://bit.ly/1GTUOj0}
- * @param {String[]}  [options.sourceSuffixes=['markdown']]  Files with specified suffixes<br>
- *                                                           involved in the assembly.
+ * @param {String[]}  [options.sourceSuffixes=['markdown']]  Files with specified suffixes involved in
+ *                                                           the assembly. Default: `markdown`
  * @example
  * // Code in a file system before build:
  * // articles/
