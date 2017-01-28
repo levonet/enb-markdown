@@ -8,13 +8,15 @@
  * This tech uses `BEMHTML`, `BEMTREE` and `markdown-bemjson` to build HTML.
  * In `bundle/bundle.bemdecl.js` need declare block `page`.
  *
- * @param {Object}            [options]                        Options
- * @param {String}            [options.target='?.html']        Path to a target with HTML file.
- * @param {String}            [options.markdown='?.markdown']  Path to MARKDOWN file.
- * @param {String}            [options.bemtree='?.bemtree.js'] Path to a file with compiled BEMTREE module.
- * @param {String}            [options.bemhtml='?.bemhtml.js'] Path to a file with compiled BEMHTML module.
- * @param {String | Boolean}  [options.requireCss='?.min.css'] Path to CSS tech file. Set `false` if not required.
- * @param {String | Boolean}  [options.requireJs='?.min.js']   Path to JS tech file. Set `false` if not required.
+ * @param {Object}            [options]                           Options
+ * @param {String}            [options.target='?.html']           Path to a target with HTML file.
+ * @param {String}            [options.markdown='?.markdown']     Path to MARKDOWN file.
+ * @param {String}            [options.bemtree='?.bemtree.js']    Path to a file with compiled BEMTREE module.
+ * @param {String}            [options.bemhtml='?.bemhtml.js']    Path to a file with compiled BEMHTML module.
+ * @param {Object}            [options.markdownBemjsonOptions={}] MarkdownBemjson options.
+ * @param {String | Boolean}  [options.requireCss='?.min.css']    Path to CSS tech file. Set `false` if not required.
+ * @param {String | Boolean}  [options.requireJs='?.min.js']      Path to JS tech file. Set `false` if not required.
+ * @param {String}            [options.rootBlock='page']          Name of root block.
  *
  * @example
  * var FileProvideTech = require('enb/techs/file-provider'),
@@ -66,80 +68,75 @@ module.exports = require('enb/lib/build-flow').create()
     .defineOption('markdownBemjsonOptions', {})
     .defineOption('requireCss', '?.min.css')
     .defineOption('requireJs', '?.min.js')
+    .defineOption('rootBlock', 'page')
     .builder(function (markdownText, bemtreeFilename, bemhtmlFilename) {
         dropRequireCache(require, bemtreeFilename);
         dropRequireCache(require, bemhtmlFilename);
 
-        const BEMTREE = require(bemtreeFilename).BEMTREE;
-        const BEMHTML = require(bemhtmlFilename).BEMHTML;
-        const markdownBemjsonOptions = _.cloneDeep(this._markdownBemjsonOptions);
-        const bemtree = { block: 'page', head: [], scripts: [], data: [] };
+        const node = this.node,
+            BEMTREE = require(bemtreeFilename).BEMTREE,
+            BEMHTML = require(bemhtmlFilename).BEMHTML,
+            markdownBemjsonOptions = _.cloneDeep(this._markdownBemjsonOptions),
+            bemtree = { block: this._rootBlock };
 
-        const htmlRule = html => {
-            function parsePageMetadata(data) {
-                var result;
-
-                if (result = data.match(/^TITLE:\s*(.*)$/)) {
-                    bemtree.title = result[1].replace(/\s$/g, '');
-                    return true;
-                }
-                if (result = data.match(/^HEAD:\s*(.*)$/)) {
-                    bemtree.head.push(eval('(' + result[1] + ')'));
-                    return true;
+        const rootCtx = {
+            setInRootCtx: function(path, value, rewrite) {
+                if (typeof rewrite === 'undefined') {
+                    rewrite = true;
                 }
 
-                return false;
-            }
+                if (_.has(bemtree, path) && _.get(bemtree, path) !== '' && !rewrite) {
+                    return;
+                }
 
-            function parse(element) {
-                var arg;
+                _.set(bemtree, path, value);
+            },
 
-                if (arg = element.match(/^<!--\s*(.*)\s*-->$/)) {
-                    if (parsePageMetadata(arg[1])) {
-                        return '';
+            pushToRootCtx: function(path, value) {
+                if (_.has(bemtree, path)) {
+                    if (!_.isArray(_.get(bemtree, path))) {
+                        node.getLogger()
+                            .logWarningAction('warning', node._targetNamesToBuild[0],
+                                'Object in rootCtx.' + path + ' is not Array');
+                        return;
                     }
-                }
-                if (element.match(/^\n+$/)
-                    || element.match(/^<!-- begin:.+$/)
-                    || element.match(/^<!-- end:.+$/)) {
-                    return '';
+                } else {
+                    _.set(bemtree, path, []);
                 }
 
-                return element;
+                _.get(bemtree, path).push(value);
             }
-
-            if (typeof html === 'object' && html instanceof Array) {
-                html.forEach((item, i, arr) => {
-                    arr[i] = parse(item);
-                });
-            } else if (typeof html === 'string') {
-                    html = parse(html);
-            }
-
-            return html;
         };
 
-        if (typeof markdownBemjsonOptions.rules.html === "function") {
-            const userHtmlRule = markdownBemjsonOptions.rules.html;
+        if (typeof markdownBemjsonOptions.rules === "object") {
+            const rules = _.mapValues(markdownBemjsonOptions.rules, rule =>
+                typeof rule === "function"
+                    ? function() {
+                        const args = _.values(arguments);
 
-            markdownBemjsonOptions.rules.html = html => 
-                userHtmlRule(htmlRule(html), data => { bemtree.data.push(data); });
-        } else {
-            markdownBemjsonOptions.rules.html = htmlRule;
+                        // Inject rootCtx methods to user rule functions
+                        args.push(rootCtx);
+
+                        return rule.apply(null, args);
+                    }
+                    : rule
+            );
+
+            markdownBemjsonOptions.rules = rules;
         }
 
         if (this._requireCss) {
-            bemtree.head.push({
+            bemtree.head = [{
                 elem: 'css',
-                url: this.node.unmaskTargetName(typeof this._requireCss === 'boolean' ? '?.min.css' : this._requireCss)
-            });
+                url: node.unmaskTargetName(typeof this._requireCss === 'boolean' ? '?.min.css' : this._requireCss)
+            }];
         }
 
         if (this._requireJs) {
-            bemtree.scripts.push({
+            bemtree.scripts = [{
                 elem: 'js',
-                url: this.node.unmaskTargetName(typeof this._requireJs === 'boolean' ? '?.min.js' : this._requireJs)
-            });
+                url: node.unmaskTargetName(typeof this._requireJs === 'boolean' ? '?.min.js' : this._requireJs)
+            }];
         }
 
         const markdownBemjson = new MarkdownBemjson(markdownBemjsonOptions);
