@@ -1,3 +1,5 @@
+.enb/tmp
+coverage/
 node_modules/
 *.sublime-*
 *.log

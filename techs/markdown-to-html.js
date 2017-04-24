@@ -77,10 +77,10 @@ module.exports = require('enb/lib/build-flow').create()
             BEMTREE = require(bemtreeFilename).BEMTREE,
             BEMHTML = require(bemhtmlFilename).BEMHTML,
             markdownBemjsonOptions = _.cloneDeep(this._markdownBemjsonOptions),
-            bemtree = { block: this._rootBlock };
+            bemtree = {block: this._rootBlock};
 
         const rootCtx = {
-            setInRootCtx: function(path, value, rewrite) {
+            setInRootCtx: function (path, value, rewrite) {
                 if (typeof rewrite === 'undefined') {
                     rewrite = true;
                 }
@@ -92,7 +92,7 @@ module.exports = require('enb/lib/build-flow').create()
                 _.set(bemtree, path, value);
             },
 
-            pushToRootCtx: function(path, value) {
+            pushToRootCtx: function (path, value) {
                 if (_.has(bemtree, path)) {
                     if (!_.isArray(_.get(bemtree, path))) {
                         node.getLogger()
@@ -111,7 +111,7 @@ module.exports = require('enb/lib/build-flow').create()
         if (typeof markdownBemjsonOptions.rules === "object") {
             const rules = _.mapValues(markdownBemjsonOptions.rules, rule =>
                 typeof rule === "function"
-                    ? function() {
+                    ? function () {
                         const args = _.values(arguments);
 
                         // Inject rootCtx methods to user rule functions
