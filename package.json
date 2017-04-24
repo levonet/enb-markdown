@@ -26,5 +26,25 @@
   "dependencies": {
     "lodash": "^4.17.4",
     "markdown-bemjson": "^3.0.6"
+  },
+  "devDependencies": {
+    "bem-core": "^4.2.0",
+    "chai": "^3.5.0",
+    "enb": ">= 0.15.0 <2.0.0",
+    "enb-bem-techs": "^2.2.2",
+    "enb-bemxjst": "^8.6.7",
+    "eslint": "^3.19.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.2.0",
+    "mock-enb": "^0.3.6",
+    "mock-fs": "^4.2.0"
+  },
+  "scripts": {
+    "prepublish": "npm test",
+    "pretest": "npm run lint && npm run fixtures",
+    "lint": "$(npm bin)/eslint .",
+    "fixtures": "[[ -f test/fixtures/bundle/bundle.bemtree.js && -f test/fixtures/bundle/bundle.bemhtml.js ]] || $(npm bin)/enb make",
+    "test": "$(npm bin)/mocha -u bdd -R spec",
+    "coveralls": "$(npm bin)/istanbul cover $(npm bin)/_mocha -- -u bdd -R spec test/*.test.js"
   }
 }
