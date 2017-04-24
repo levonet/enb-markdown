@@ -1,4 +1,7 @@
 # enb-markdown
+[![NPM version](https://img.shields.io/npm/v/enb-markdown.svg?style=flat)](https://www.npmjs.com/package/enb-markdown)
+[![Build Status](https://travis-ci.org/levonet/enb-markdown.svg?branch=master)](https://travis-ci.org/levonet/enb-markdown)
+[![Coverage Status](https://coveralls.io/repos/github/levonet/enb-markdown/badge.svg?branch=master)](https://coveralls.io/github/levonet/enb-markdown?branch=master)
 
 Пакет предоставляет набор [ENB](https://ru.bem.info/toolbox/enb/)-технологий
 для сборки Markdown-файлов, разложенных по [методологии БЭМ](https://ru.bem.info/method/),

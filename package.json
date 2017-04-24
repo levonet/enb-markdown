@@ -43,7 +43,7 @@
     "prepublish": "npm test",
     "pretest": "npm run lint && npm run fixtures",
     "lint": "$(npm bin)/eslint .",
-    "fixtures": "[[ -f test/fixtures/bundle/bundle.bemtree.js && -f test/fixtures/bundle/bundle.bemhtml.js ]] || $(npm bin)/enb make",
+    "fixtures": "[ -f test/fixtures/bundle/bundle.bemtree.js -a -f test/fixtures/bundle/bundle.bemhtml.js ] || $(npm bin)/enb make",
     "test": "$(npm bin)/mocha -u bdd -R spec",
     "coveralls": "$(npm bin)/istanbul cover $(npm bin)/_mocha -- -u bdd -R spec test/*.test.js"
   }
