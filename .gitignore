@@ -1,6 +1,6 @@
-.enb/tmp
 coverage/
 node_modules/
+test/fixtures/.enb/tmp
 *.sublime-*
 *.log
 *~
