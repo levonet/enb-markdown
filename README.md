@@ -10,7 +10,7 @@
 ## Установка
 
 ```sh
-$ npm install --save-dev enb-markdown
+$ npm install --save enb-markdown
 ```
 
 **Требования:**
